@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  maptoposter:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./posters:/root/posters
+      - ./themes:/root/themes
+      - ./fonts:/root/fonts
+    environment:
+      - GIN_MODE=release
+      - PORT=8080
+    restart: unless-stopped
