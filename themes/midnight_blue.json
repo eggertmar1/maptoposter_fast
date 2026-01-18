@@ -1,0 +1,15 @@
+{
+  "name": "Midnight Blue",
+  "description": "Deep midnight blue with silver accents",
+  "bg": "#191970",
+  "text": "#FFFFFF",
+  "gradient_color": "#191970",
+  "water": "#000080",
+  "parks": "#0F0F5F",
+  "road_motorway": "#C0C0C0",
+  "road_primary": "#B0B0B0",
+  "road_secondary": "#A0A0A0",
+  "road_tertiary": "#909090",
+  "road_residential": "#808080",
+  "road_default": "#707070"
+}

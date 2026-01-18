@@ -1,0 +1,15 @@
+{
+  "name": "Forest",
+  "description": "Natural forest greens and earth tones",
+  "bg": "#F0F4F0",
+  "text": "#2D4A2B",
+  "gradient_color": "#F0F4F0",
+  "water": "#87CEEB",
+  "parks": "#90EE90",
+  "road_motorway": "#2F4F2F",
+  "road_primary": "#3C5A3C",
+  "road_secondary": "#4A6B4A",
+  "road_tertiary": "#5C7C5C",
+  "road_residential": "#6E8D6E",
+  "road_default": "#7A9E7A"
+}
