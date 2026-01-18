@@ -29,6 +29,12 @@ func (h *Handler) SetupRoutes(r *gin.Engine) {
 	// Health check
 	r.GET("/health", h.Health)
 
+	// Serve static frontend
+	r.Static("/public", "./public")
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/public/index.html")
+	})
+
 	// API routes
 	api := r.Group("/api")
 	{
