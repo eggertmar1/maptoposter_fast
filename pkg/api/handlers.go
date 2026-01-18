@@ -12,6 +12,11 @@ import (
 
 const Version = "1.0.0"
 
+const (
+	DefaultDistance        = 29000 // Default 29km radius for full poster
+	DefaultPreviewDistance = 10000 // Default 10km radius for preview
+)
+
 // Handler handles HTTP requests
 type Handler struct {
 	generator *generator.Generator
@@ -104,7 +109,7 @@ func (h *Handler) Generate(c *gin.Context) {
 		req.Theme = "feature_based"
 	}
 	if req.Distance == 0 {
-		req.Distance = 29000 // Default 29km radius
+		req.Distance = DefaultDistance
 	}
 
 	// Load theme
@@ -150,7 +155,7 @@ func (h *Handler) Preview(c *gin.Context) {
 		req.Theme = "feature_based"
 	}
 	if req.Distance == 0 {
-		req.Distance = 10000 // Smaller default for preview
+		req.Distance = DefaultPreviewDistance
 	}
 
 	// Load theme

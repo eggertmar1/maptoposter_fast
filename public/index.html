@@ -262,7 +262,10 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8080';
+        // Determine API base URL - use current origin in production
+        const API_BASE = window.location.origin.includes('localhost') 
+            ? 'http://localhost:8080' 
+            : window.location.origin;
 
         // Load available themes on page load
         async function loadThemes() {

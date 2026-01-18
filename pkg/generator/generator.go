@@ -533,10 +533,15 @@ func (g *Generator) addTextOverlay(img *image.RGBA, city, country string, locati
 	c.SetFontSize(24)
 	coords := fmt.Sprintf("%.4f° N / %.4f° E", location.Latitude, location.Longitude)
 	if location.Latitude < 0 {
-		coords = fmt.Sprintf("%.4f° S / %.4f° E", math.Abs(location.Latitude), location.Longitude)
+		coords = fmt.Sprintf("%.4f° S / ", math.Abs(location.Latitude))
+	} else {
+		coords = fmt.Sprintf("%.4f° N / ", location.Latitude)
 	}
+	
 	if location.Longitude < 0 {
-		coords = strings.Replace(coords, "E", "W", 1)
+		coords += fmt.Sprintf("%.4f° W", math.Abs(location.Longitude))
+	} else {
+		coords += fmt.Sprintf("%.4f° E", location.Longitude)
 	}
 	pt = freetype.Pt(Width/2-len(coords)*5, Height-300)
 	c.DrawString(coords, pt)
