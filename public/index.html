@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Poster Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        #status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        #status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        #status.loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .result {
+            margin-top: 30px;
+        }
+
+        #posterImage {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .info {
+            background: #e6f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #004085;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ Map Poster Generator</h1>
+
+        <div class="card">
+            <div class="info">
+                <strong>ℹ️ Quick Start:</strong> Enter a city and country, select a theme, and click "Generate Preview" to see a quick preview or "Generate Poster" for a full-resolution image.
+            </div>
+
+            <form id="posterForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" name="city" placeholder="e.g., Paris" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="country">Country *</label>
+                        <input type="text" id="country" name="country" placeholder="e.g., France" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="theme">Theme</label>
+                        <select id="theme" name="theme">
+                            <option value="feature_based">Feature Based</option>
+                            <option value="noir">Noir</option>
+                            <option value="ocean">Ocean</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="distance">Distance (meters)</label>
+                        <input type="number" id="distance" name="distance" value="10000" min="1000" max="50000" step="1000">
+                    </div>
+                </div>
+
+                <div class="info" style="font-size: 14px;">
+                    <strong>Distance Guide:</strong><br>
+                    • 4000-6000m: Small/dense cities (Venice, Amsterdam)<br>
+                    • 8000-12000m: Medium cities (Paris, Barcelona)<br>
+                    • 15000-20000m: Large metros (Tokyo, Mumbai)
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-secondary" onclick="generatePreview()">
+                        🔍 Generate Preview
+                    </button>
+                    <button type="button" class="btn-primary" onclick="generatePoster()">
+                        🎨 Generate Poster
+                    </button>
+                </div>
+            </form>
+
+            <div class="spinner" id="spinner"></div>
+
+            <div id="status"></div>
+        </div>
+
+        <div class="card result" id="resultCard" style="display: none;">
+            <h2>Generated Poster</h2>
+            <img id="posterImage" src="" alt="Generated poster">
+            <p style="margin-top: 15px; color: #666;">
+                <a id="downloadLink" href="" download style="color: #667eea; text-decoration: none; font-weight: 500;">
+                    📥 Download Full Resolution
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Determine API base URL - use current origin in production
+        const API_BASE = window.location.origin.includes('localhost') 
+            ? 'http://localhost:8080' 
+            : window.location.origin;
+
+        // Load available themes on page load
+        async function loadThemes() {
+            try {
+                const response = await fetch(`${API_BASE}/api/themes`);
+                const data = await response.json();
+                
+                const themeSelect = document.getElementById('theme');
+                themeSelect.innerHTML = '';
+                
+                data.themes.forEach(theme => {
+                    const option = document.createElement('option');
+                    option.value = theme;
+                    option.textContent = theme.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    themeSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to load themes:', error);
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = type;
+        }
+
+        function showSpinner(show) {
+            const spinner = document.getElementById('spinner');
+            spinner.classList.toggle('active', show);
+        }
+
+        async function generatePreview() {
+            const city = document.getElementById('city').value;
+            const country = document.getElementById('country').value;
+            const theme = document.getElementById('theme').value;
+            const distance = parseInt(document.getElementById('distance').value);
+
+            if (!city || !country) {
+                showStatus('Please fill in city and country fields', 'error');
+                return;
+            }
+
+            showStatus('Generating preview... This may take 10-30 seconds.', 'loading');
+            showSpinner(true);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/preview`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        city,
+                        country,
+                        theme,
+                        distance: Math.floor(distance / 2)
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(`Preview generated successfully! File: ${data.filename}`, 'success');
+                    displayResult(data.url);
+                } else {
+                    showStatus(`Error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Failed to generate preview: ${error.message}`, 'error');
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        async function generatePoster() {
+            const city = document.getElementById('city').value;
+            const country = document.getElementById('country').value;
+            const theme = document.getElementById('theme').value;
+            const distance = parseInt(document.getElementById('distance').value);
+
+            if (!city || !country) {
+                showStatus('Please fill in city and country fields', 'error');
+                return;
+            }
+
+            showStatus('Generating full poster... This may take 30-60 seconds.', 'loading');
+            showSpinner(true);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        city,
+                        country,
+                        theme,
+                        distance
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(`Poster generated successfully! File: ${data.filename}`, 'success');
+                    displayResult(data.url);
+                } else {
+                    showStatus(`Error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Failed to generate poster: ${error.message}`, 'error');
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        function displayResult(url) {
+            const resultCard = document.getElementById('resultCard');
+            const posterImage = document.getElementById('posterImage');
+            const downloadLink = document.getElementById('downloadLink');
+            
+            const fullUrl = `${API_BASE}${url}`;
+            posterImage.src = fullUrl;
+            downloadLink.href = fullUrl;
+            resultCard.style.display = 'block';
+            
+            // Scroll to result
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Load themes when page loads
+        loadThemes();
+    </script>
+</body>
+</html>
